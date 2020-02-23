@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App1.Service
+namespace NineyWeather.Service
 {
-    class KkoDocuments
+    class KkoResult
     {
-        public string x;
-        public string y;
+        public List<KkoDocuments> documents;
     }
 }

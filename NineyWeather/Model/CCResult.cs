@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App1
+namespace NineyWeather
 {
     class CCResult<T>
     {

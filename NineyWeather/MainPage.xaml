@@ -9,6 +9,118 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
+        <Grid Background="#0099CC">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="200"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="200"/>
+            </Grid.RowDefinitions>
 
+            <StackPanel Grid.Row="0" VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Orientation="Vertical">
+                <TextBlock x:Name="txtCity"
+                           Text=""
+                           FontWeight="SemiBold"
+                           FontSize="30"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           />
+                <TextBlock x:Name="txtLastUpdate"
+                           Text=""
+                           FontWeight="SemiBold"
+                           FontSize="14"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           />
+            </StackPanel>
+
+            <ProgressRing x:Name="progressRing"
+                          Grid.Row="1"
+                          IsAccessKeyScope="False"
+                          Width="50" Height="50"
+                          Foreground="White"
+                          HorizontalAlignment="Center"
+                          VerticalAlignment="Center"
+                          />
+
+            <StackPanel Grid.Row="1"
+                        Orientation="Vertical"
+                        VerticalAlignment="Center"
+                        Width="200">
+                <Image
+                    x:Name="imgWeather"
+                    Stretch="Uniform"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"/>
+                <TextBlock x:Name="txtKhaiValue"
+                           Text=""
+                           FontWeight="SemiBold"
+                           FontSize="20"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel Grid.Row="2" Orientation="Vertical"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="imgPm10Value"
+                           Source=""
+                           Stretch="Uniform"
+                           Width="37" Height="46"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="txtPm10Value"
+                           Text=""
+                           FontWeight="SemiBold"
+                           FontSize="30"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <Image x:Name="imgPm25Value"
+                           Source=""
+                           Stretch="Uniform"
+                           Width="37" Height="46"
+                           VerticalAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                    <TextBlock x:Name="txtPm25Value"
+                           Text=""
+                           FontWeight="SemiBold"
+                           FontSize="30"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock x:Name="txtTime"
+                               Text=""
+                               FontWeight="SemiBold"
+                               FontSize="30"
+                               Foreground="White"
+                               TextAlignment="Center"
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+            </StackPanel>
+
+            <!--<TextBlock x:Name="txtCel"
+                           Text=""
+                           FontWeight="SemiBold"
+                           FontSize="30"
+                           Foreground="White"
+                           TextAlignment="Center"
+                           HorizontalAlignment="Center"/>-->
+        </Grid>
     </Grid>
+    <Page.BottomAppBar>
+        <CommandBar ClosedDisplayMode="Compact" Background="#344A61">
+            <AppBarButton x:Name="btnGetWeather"
+                          Foreground="White"
+                          Icon="World"
+                          Label="Get Weather" Click="BtnGetWeather_Click"/>
+        </CommandBar>
+    </Page.BottomAppBar>
 </Page>
