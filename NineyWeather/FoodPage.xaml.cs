@@ -30,5 +30,16 @@ namespace NineyWeather
             FoodRecommendService foodService = new FoodRecommendService();
             this.foodList.ItemsSource = foodService.Request();
         }
+
+        private async void foodList_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            // Set the desired remaining view.
+            var options = new Windows.System.LauncherOptions();
+            options.DesiredRemainingView = Windows.UI.ViewManagement.ViewSizePreference.UseLess;
+
+            // Launch the URI
+            FoodItem foodItem = e.ClickedItem as FoodItem;
+            var success = await Windows.System.Launcher.LaunchUriAsync(new Uri($"https://www.10000recipe.com/recipe/view.html?seq={foodItem.id}"), options);
+        }
     }
 }

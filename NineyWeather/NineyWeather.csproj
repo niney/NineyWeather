@@ -135,6 +135,7 @@
     <Compile Include="Model\KkoResult.cs" />
     <Compile Include="Service\AirColor.cs" />
     <Compile Include="Service\FoodRecommendService.cs" />
+    <Compile Include="Service\LibraryService.cs" />
     <Compile Include="WratherPage.xaml.cs">
       <DependentUpon>WratherPage.xaml</DependentUpon>
     </Compile>

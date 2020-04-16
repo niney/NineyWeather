@@ -9,7 +9,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
     <Grid>
-        <ListView x:Name="foodList">
+        <!--<ListView x:Name="foodList">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="174" Margin="6">
@@ -18,7 +18,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="275" Height="174">
-                            <Image Source="{Binding Img}" Stretch="UniformToFill"/>
+                            <Image Source="{Binding Img}" Stretch="Uniform"/>
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
                             <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontSize="22"/>
@@ -26,6 +26,24 @@
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-        </ListView>
+        </ListView>-->
+        <GridView x:Name="foodList" IsItemClickEnabled="True" ItemClick="foodList_ItemClick">
+            <GridView.ItemTemplate>
+                <DataTemplate x:Name="ImageOverlayDataTemplate">
+                    <StackPanel Height="280" Width="320" Margin="12" AutomationProperties.Name="{Binding Title}">
+                        <Image Source="{Binding Img}" Height="180" Width="320" Stretch="Fill"/>
+                        <StackPanel Margin="0,12">
+                            <TextBlock Text="{Binding Title}" Style="{StaticResource ListItemTitleTextStyle}"/>
+                            <!--<TextBlock Text="{x:Bind ArtistName}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>-->
+                        </StackPanel>
+                    </StackPanel>
+                </DataTemplate>
+            </GridView.ItemTemplate>
+            <GridView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
+                </ItemsPanelTemplate>
+            </GridView.ItemsPanel>
+        </GridView>
     </Grid>
 </Page>

@@ -42,9 +42,9 @@
                 <RelativePanel Background="{ThemeResource SystemControlBackgroundChromeMediumBrush}">
                     <StackPanel x:Name="HeaderPanel" Orientation="Horizontal">
                         <Image x:Name="WindowsLogo" Stretch="None" Source="Assets/windows-sdk.png" Margin="0,15,0,0" />
-                        <TextBlock x:Name="Header" Text="Windows platform sample" Style="{StaticResource TagLineTextStyle}" Margin="0,15,0,0" />
+                        <!--<TextBlock x:Name="Header" Text="Windows platform sample" Style="{StaticResource TagLineTextStyle}" Margin="0,15,0,0" />-->
                     </StackPanel>
-                    <TextBlock x:Name="SampleTitle" Text="Sample Title Here" Style="{StaticResource SampleHeaderTextStyle}" TextWrapping="Wrap" RelativePanel.Below="HeaderPanel" Margin="0,10,0,0"/>
+                    <TextBlock x:Name="SampleTitle" Text="Sample Title Here" TextWrapping="Wrap" RelativePanel.Below="HeaderPanel" Margin="2,0,0,0" FontSize="17px"/>
                     <ListBox x:Name="ScenarioControl" SelectionChanged="ScenarioControl_SelectionChanged"
                  SelectionMode="Single" HorizontalAlignment="Left" Style="{StaticResource ScenarioListBoxStyle}"
                  VerticalAlignment="Top" RelativePanel.Below="SampleTitle" Margin="0,10,0,0" RelativePanel.Above="FooterPanel">
@@ -82,24 +82,25 @@
             <Border>
                 <ToggleButton Style="{StaticResource SymbolButton}" Click="Button_Click" VerticalAlignment="Top" Foreground="{ThemeResource ApplicationForegroundThemeBrush}">
                     <ToggleButton.Content>
-                        <FontIcon x:Name="Hamburger" FontFamily="Segoe MDL2 Assets" Glyph="&#xE700;" Margin="0,10,0,0"/>
+                        <FontIcon x:Name="Hamburger" FontFamily="Segoe MDL2 Assets" Glyph="&#xE700;" />
                     </ToggleButton.Content>
                 </ToggleButton>
             </Border>
             <Border>
                 <ToggleButton Style="{StaticResource SymbolButton}" Click="ScenarioControl_Changed" Tag="0" VerticalAlignment="Top" Foreground="{ThemeResource ApplicationForegroundThemeBrush}">
                     <ToggleButton.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE753;" Margin="0,10,0,0"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE753;" />
                     </ToggleButton.Content>
                 </ToggleButton>
             </Border>
             <Border>
                 <ToggleButton Style="{StaticResource SymbolButton}" Click="ScenarioControl_Changed" Tag="1" VerticalAlignment="Top" Foreground="{ThemeResource ApplicationForegroundThemeBrush}">
                     <ToggleButton.Content>
-                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED56;" Margin="0,10,0,0"/>
+                        <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED56;" />
                     </ToggleButton.Content>
                 </ToggleButton>
             </Border>
+            
         </StackPanel>
     </Grid>
     <!--<Page.BottomAppBar>
