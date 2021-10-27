@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace NineyWeather.Model
 {
+    enum ProviderName
+    {
+        None, AirKorea, Kweather,
+    }
+
     class AirMesure
     {
         public string MangName { get; set; }
@@ -17,6 +22,7 @@ namespace NineyWeather.Model
         public string KhaiGrade { get; set; }
         public string Pm10Grade1h { get; set; }
         public string Pm25Grade1h { get; set; }
-        public string dataTime { get; set; }
+        public string DataTime { get; set; }
+        public ProviderName Provider { get; set; }
     }
 }

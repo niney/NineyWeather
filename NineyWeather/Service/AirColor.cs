@@ -12,11 +12,11 @@ namespace NineyWeather.Service
     {
         private static readonly int redRange = 150;
         private static readonly int greenRange = 20;
-        private static readonly int blueRange = 255;
+        private static readonly int blueRange = 100;
 
         private readonly double redRate = 255.0 / redRange;
         private readonly double greenRate = 255.0 / greenRange;
-        private readonly double blueRate = 255.0 / blueRange;
+        private readonly double blueRate = 100.0 / blueRange;
 
         public Brush CalSolidBrush(int dust)
         {
@@ -28,7 +28,9 @@ namespace NineyWeather.Service
             if (dust > greenRange) {
                 green = 0;
             }
-            byte blue = (byte)(((dust * this.blueRate) - 255) * -1);
+            //byte blue = (byte)(((dust * this.blueRate) - 100) * -1);
+            int ddust = (int)(Math.Pow(dust / 4, 2));
+            byte blue = (byte)((ddust - 255) * -1);
             if (dust > blueRange) {
                 blue = 0;
             }
