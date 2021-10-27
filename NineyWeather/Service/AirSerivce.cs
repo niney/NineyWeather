@@ -11,6 +11,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
+using Windows.ApplicationModel.Resources;
 using Windows.Data.Json;
 using Windows.Web.Http;
 using Windows.Web.Http.Headers;
@@ -21,9 +22,11 @@ namespace NineyWeather.Service
     {
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
 
+        private static readonly ResourceLoader RESOURCES = new ResourceLoader("apiResources");
         private const string KAKAKO_URL = "https://dapi.kakao.com/v2/local/{0}/{1}.json";
         private const string KAKAKO_AUTH_KEY = "Authorization";
-        private const string KAKAKO_AUTH_VAL = "KakaoAK 0a9fc00e3366d781f02429831a3b953d";
+        private readonly string KAKAKO_AUTH_VAL = RESOURCES.GetString("kakaoAuthKey");
+        private readonly string AIRKOREA_API_KEY = RESOURCES.GetString("airServiceKey");
 
         public async Task<string> Coord2Address(string lng, string lat)
         {
@@ -107,8 +110,7 @@ namespace NineyWeather.Service
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource(2000);
             try
             {
-                //string airServiceKey = "8h7b9a876gQhh2GZaSMXGEaFeqpFoX%2BLx2K6XXe67dGgKbwb45BMzPMTbmFfQuL59feW3%2FnXXbwLWss871elXA%3D%3D";
-                string airServiceKey = "KtUrDQ1aaGWFVpo7qKpsqBwsxgVBB6qCPhq2PlRt4lMC7cyYp0jJrRXRH3BFZ6AiJCxaHFWLxpkr73WvKy6uWw%3D%3D";
+                string airServiceKey = AIRKOREA_API_KEY;
                 // 미세먼지 정보
                 var uri = new Uri(string.Format("http://openapi.airkorea.or.kr/openapi/services/rest/MsrstnInfoInqireSvc/getNearbyMsrstnList?ServiceKey={0}&tmX={1}&tmY={2}", airServiceKey, x, y));
                 var response = await httpClient.GetAsync(uri).AsTask(cancellationTokenSource.Token);

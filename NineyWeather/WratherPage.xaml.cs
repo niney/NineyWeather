@@ -62,8 +62,7 @@ namespace NineyWeather
                 this.lng = pos.Coordinate.Point.Position.Longitude.ToString();
                 this.lat = pos.Coordinate.Point.Position.Latitude.ToString();
 
-                //var addressName = await this.airSerivce.Coord2Address(this.lng, this.lat);
-                var addressName = "서울시 양천구 목4동";
+                var addressName = await this.airSerivce.Coord2Address(this.lng, this.lat);
                 var airMesure = await this.airSerivce.Request(addressName);
 
                 this.txtCity.Text = addressName;

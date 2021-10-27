@@ -241,6 +241,8 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <PRIResource Include="apiResources_copy.resw" />
+    <None Include="README.md" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
