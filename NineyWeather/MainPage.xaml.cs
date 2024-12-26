@@ -1,4 +1,6 @@
-﻿using Windows.UI.Xaml;
+﻿using System.Linq;
+using Windows.Storage;
+using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
 
@@ -6,15 +8,32 @@ namespace NineyWeather
 {
     public sealed partial class MainPage : Page
     {
-        public static MainPage Current;
+        private const string SelectedNavItemKey = "SelectedNavItem";
 
         public MainPage()
         {
             this.InitializeComponent();
-            Current = this;
 
-            // 초기 페이지로 날씨 페이지 설정
-            ContentFrame.Navigate(typeof(WeatherPage));
+            // 마지막으로 선택한 NavigationViewItem 복원
+            var localSettings = ApplicationData.Current.LocalSettings;
+            if (localSettings.Values.ContainsKey(SelectedNavItemKey))
+            {
+                var selectedItemTag = localSettings.Values[SelectedNavItemKey] as string;
+                var selectedItem = NavView.MenuItems
+                    .OfType<NavigationViewItem>()
+                    .FirstOrDefault(item => item.Tag.ToString() == selectedItemTag);
+
+                if (selectedItem != null)
+                {
+                    NavView.SelectedItem = selectedItem;
+                    NavigateToPage(selectedItemTag);
+                }
+            }
+            else
+            {
+                // 초기 페이지로 날씨 페이지 설정
+                ContentFrame.Navigate(typeof(WeatherPage));
+            }
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -22,21 +41,28 @@ namespace NineyWeather
             if (args.IsSettingsInvoked)
                 return;
 
-            switch (args.InvokedItem?.ToString())
+            var invokedItemTag = (args.InvokedItemContainer as NavigationViewItem)?.Tag.ToString();
+            if (invokedItemTag != null)
             {
-                case "날씨":
+                // 선택한 NavigationViewItem 저장
+                var localSettings = ApplicationData.Current.LocalSettings;
+                localSettings.Values[SelectedNavItemKey] = invokedItemTag;
+
+                NavigateToPage(invokedItemTag);
+            }
+        }
+
+        private void NavigateToPage(string tag)
+        {
+            switch (tag)
+            {
+                case "weather":
                     ContentFrame.Navigate(typeof(WeatherPage));
                     break;
-                case "음식추천":
+                case "food":
                     ContentFrame.Navigate(typeof(FoodPage));
                     break;
             }
         }
-
-        public enum NotifyType
-        {
-            StatusMessage,
-            ErrorMessage
-        };
     }
 }
