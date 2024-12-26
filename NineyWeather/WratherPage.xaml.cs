@@ -18,6 +18,8 @@ using NineyWeather.Service;
 using NLog;
 using Windows.System;
 using NLog.Fluent;
+using Newtonsoft.Json.Linq;
+using Windows.Media.Protection.PlayReady;
 
 // 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
 
@@ -26,7 +28,7 @@ namespace NineyWeather
     /// <summary>
     /// 자체적으로 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
     /// </summary>
-    public sealed partial class WratherPage : Page
+    public sealed partial class WeatherPage : Page
     {
 
         private static readonly NLog.Logger Logger = NLog.LogManager.GetCurrentClassLogger();
@@ -37,7 +39,7 @@ namespace NineyWeather
         private DispatcherTimer currentTimeTimer;
         private DispatcherTimer airTimer;
 
-        public WratherPage()
+        public WeatherPage()
         {
             // log 설정
             Windows.Storage.StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
@@ -55,8 +57,12 @@ namespace NineyWeather
             try
             {
                 this.progressRing.IsActive = true;
-                var geoLocator = new Geolocator();
-                geoLocator.DesiredAccuracy = PositionAccuracy.High;
+                var geoLocator = new Geolocator
+                {
+                    DesiredAccuracy = PositionAccuracy.High,
+                    MovementThreshold = 1
+                };
+                
                 // 나의 위치 정보 가져오기
                 Geoposition pos = await geoLocator.GetGeopositionAsync();
                 this.lng = pos.Coordinate.Point.Position.Longitude.ToString();

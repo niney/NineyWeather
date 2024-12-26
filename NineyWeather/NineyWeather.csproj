@@ -119,8 +119,12 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Converters\StepNumberConverter.cs" />
     <Compile Include="FoodPage.xaml.cs">
       <DependentUpon>FoodPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="FullScreenWebView.xaml.cs">
+      <DependentUpon>FullScreenWebView.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -129,6 +133,9 @@
     <Compile Include="Model\CCResult.cs" />
     <Compile Include="Model\Stream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecipeDetailPage.xaml.cs">
+      <DependentUpon>RecipeDetailPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScenarioConfiguration.cs" />
     <Compile Include="Service\AirSerivce.cs" />
     <Compile Include="Model\KkoDocuments.cs" />
@@ -213,9 +220,17 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="FullScreenWebView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="RecipeDetailPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Styles\Styles.xaml">
       <SubType>Designer</SubType>
@@ -234,7 +249,7 @@
       <Version>6.2.10</Version>
     </PackageReference>
     <PackageReference Include="Newtonsoft.Json">
-      <Version>12.0.3</Version>
+      <Version>13.0.3</Version>
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.7.2</Version>
@@ -242,6 +257,7 @@
   </ItemGroup>
   <ItemGroup>
     <PRIResource Include="apiResources_copy.resw" />
+    <PRIResource Include="apiResources.resw" />
     <None Include="README.md" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

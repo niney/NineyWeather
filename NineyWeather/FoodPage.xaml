@@ -6,42 +6,81 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d"
-    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    Loaded="Page_Loaded">
 
     <Grid>
-        <!--<ListView x:Name="foodList">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10" Grid.Row="0">
+            <Button Click="ListViewButton_Click" Margin="5">
+                <Button.Content>
+                    <FontIcon Glyph="&#xE8EF;" /> <!-- ListView 아이콘 -->
+                </Button.Content>
+            </Button>
+            <Button Click="GridViewButton_Click" Margin="5">
+                <Button.Content>
+                    <FontIcon Glyph="&#xE80A;" /> <!-- GridView 아이콘 -->
+                </Button.Content>
+            </Button>
+        </StackPanel>
+        
+        <ListView x:Name="foodListView" Visibility="Collapsed" Grid.Row="1">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Height="174" Margin="6">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="275" Height="174">
-                            <Image Source="{Binding Img}" Stretch="Uniform"/>
+                            <Image Source="{Binding Img}" Stretch="Uniform" />
                         </Border>
                         <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
-                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontSize="22"/>
+                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontSize="22" />
                         </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
-        </ListView>-->
-        <GridView x:Name="foodList" IsItemClickEnabled="True" ItemClick="foodList_ItemClick">
+        </ListView>
+        
+        <GridView x:Name="foodGridView" 
+                  IsItemClickEnabled="True" 
+                  ItemClick="FoodList_ItemClick"
+                  Margin="5"
+                  SelectionMode="None"
+                  SizeChanged="FoodList_SizeChanged"
+                  Grid.Row="1">
+            <GridView.Template>
+                <ControlTemplate TargetType="GridView">
+                    <ScrollViewer x:Name="ScrollViewer" 
+                         ViewChanged="ScrollViewer_ViewChanged">
+                        <ItemsPresenter />
+                    </ScrollViewer>
+                </ControlTemplate>
+            </GridView.Template>
             <GridView.ItemTemplate>
                 <DataTemplate x:Name="ImageOverlayDataTemplate">
-                    <StackPanel Height="280" Width="320" Margin="12" AutomationProperties.Name="{Binding Title}">
-                        <Image Source="{Binding Img}" Height="180" Width="320" Stretch="Fill"/>
-                        <StackPanel Margin="0,12">
-                            <TextBlock Text="{Binding Title}" Style="{StaticResource ListItemTitleTextStyle}"/>
-                            <!--<TextBlock Text="{x:Bind ArtistName}" Style="{ThemeResource CaptionTextBlockStyle}" Foreground="{ThemeResource SystemControlPageTextBaseMediumBrush}"/>-->
-                        </StackPanel>
+                    <StackPanel Margin="12"
+                                AutomationProperties.Name="{Binding Title}">
+                        <Image Source="{Binding Img}" 
+                               Stretch="UniformToFill"
+                               x:Name="ImageElement"/>
+                        <TextBlock Text="{Binding Title}" 
+                                   Style="{StaticResource ListItemTitleTextStyle}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,12"/>
                     </StackPanel>
                 </DataTemplate>
             </GridView.ItemTemplate>
+
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <ItemsWrapGrid MaximumRowsOrColumns="4" Orientation="Horizontal"/>
+                    <ItemsWrapGrid x:Name="foodWrapGrid" 
+                                   Orientation="Horizontal" />
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>

@@ -11,7 +11,7 @@ namespace NineyWeather
     {
         List<Scenario> scenarios = new List<Scenario>
         {
-            new Scenario() { Title="날씨", ClassType=typeof(WratherPage)},
+            new Scenario() { Title="날씨", ClassType=typeof(WeatherPage)},
             new Scenario() { Title="음식추천", ClassType=typeof(FoodPage)}
         };
 
