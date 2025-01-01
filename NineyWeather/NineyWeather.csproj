@@ -119,12 +119,18 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="BusPage.xaml.cs">
+      <DependentUpon>BusPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Converters\StepNumberConverter.cs" />
     <Compile Include="FoodPage.xaml.cs">
       <DependentUpon>FoodPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="FullScreenWebView.xaml.cs">
       <DependentUpon>FullScreenWebView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ImageSlidePage.xaml.cs">
+      <DependentUpon>ImageSlidePage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -216,11 +222,19 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="BusPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="FoodPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="FullScreenWebView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ImageSlidePage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -242,6 +256,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="ClosedXML">
+      <Version>0.104.2</Version>
+    </PackageReference>
     <PackageReference Include="HtmlAgilityPack">
       <Version>1.11.24</Version>
     </PackageReference>
@@ -258,6 +275,8 @@
   <ItemGroup>
     <PRIResource Include="apiResources_copy.resw" />
     <PRIResource Include="apiResources.resw" />
+    <Content Include="Assets\서울시버스노선별정류소정보%2820241209%29.xlsx" />
+    <Content Include="Assets\서울시버스정류소위치정보%2820241209%29.xlsx" />
     <None Include="README.md" />
     <None Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

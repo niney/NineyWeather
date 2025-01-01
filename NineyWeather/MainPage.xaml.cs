@@ -62,6 +62,12 @@ namespace NineyWeather
                 case "food":
                     ContentFrame.Navigate(typeof(FoodPage));
                     break;
+                case "bus":
+                    ContentFrame.Navigate(typeof(BusPage));
+                    break;
+                case "photos":
+                    ContentFrame.Navigate(typeof(ImageSlidePage));
+                    break;
             }
         }
     }

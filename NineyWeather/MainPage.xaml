@@ -26,6 +26,20 @@
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xED56;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
+
+            <NavigationViewItem Tag="bus" 
+                    Content="버스">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE806;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
+
+            <NavigationViewItem Tag="photos" 
+                   Content="사진 슬라이드">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
         </NavigationView.MenuItems>
 
         <Frame x:Name="ContentFrame"/>
