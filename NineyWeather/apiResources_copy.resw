@@ -121,6 +121,9 @@
     <value />
     <comment>공공 에어코리아 API 키</comment>
   </data>
+  <data name="bingMapServiceKey" xml:space="preserve">
+    <value />
+  </data>
   <data name="kakaoAuthKey" xml:space="preserve">
     <value />
     <comment>카카오 인증키</comment>

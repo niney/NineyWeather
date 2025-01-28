@@ -1,213 +1,105 @@
-﻿using ClosedXML.Excel;
+﻿using NineyWeather.Service;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Resources;
 using Windows.Devices.Geolocation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Maps;
 
-// 빈 페이지 항목 템플릿에 대한 설명은 https://go.microsoft.com/fwlink/?LinkId=234238에 나와 있습니다.
-
 namespace NineyWeather
 {
-    public class BusStop
-    {
-        public string RouteId { get; set; }
-        public string RouteName { get; set; }
-        public int Sequence { get; set; }
-        public string NodeId { get; set; }
-        public string ArsId { get; set; }
-        public string StopName { get; set; }
-        public double Longitude { get; set; }
-        public double Latitude { get; set; }
-    }
-
-    /// <summary>
-    /// 자체적으로 사용하거나 프레임 내에서 탐색할 수 있는 빈 페이지입니다.
-    /// </summary>
     public sealed partial class BusPage : Page
     {
+        #region Fields and Constants
+        private static readonly ResourceLoader RESOURCES = new ResourceLoader("apiResources");
+        private readonly string BING_MAP_SERVICE_KEY = RESOURCES.GetString("bingMapServiceKey");
+        private const string FAVORITES_SETTINGS_KEY = "BusFavorites";
+
+        // 서비스
+        private readonly BusService busService = new BusService();
+
+        // 지도 관련
         private Dictionary<string, List<BusStop>> busStops = new Dictionary<string, List<BusStop>>();
         private List<MapIcon> allMapIcons = new List<MapIcon>();
         private HashSet<MapIcon> currentMapIcons = new HashSet<MapIcon>();
-        private DispatcherTimer updateTimer;
+        private MapIcon selectedMapIcon;
 
+        // 타이머
+        private DispatcherTimer updateTimer;
+        private DispatcherTimer busArrivalInfoTimer;
+
+        // 캐시와 즐겨찾기
+        private Dictionary<string, Dictionary<string, BusArrivalInfo>> busArrivalInfoCache = new Dictionary<string, Dictionary<string, BusArrivalInfo>>();
+        private HashSet<string> favoriteBusRoutes;
+        #endregion
+
+        #region Initialization
         public BusPage()
         {
             this.InitializeComponent();
             InitializeMap();
             InitializeUpdateTimer();
+            LoadFavorites();
         }
 
         private async void InitializeMap()
         {
-            MyMap.MapServiceToken = "YourMapServiceToken"; // 여기에 실제 맵 서비스 토큰을 입력하세요.
+            await InitializeMapLocation();
+            MyMap.MapElementClick += MyMap_MapElementClick;
+            await LoadBusStops();
+            this.busStops = await busService.LoadBusStopsByRoute();
+            SettingLoadLastMapIcon();
+        }
+
+        private async Task InitializeMapLocation()
+        {
+            MyMap.MapServiceToken = BING_MAP_SERVICE_KEY;
             var accessStatus = await Geolocator.RequestAccessAsync();
 
             if (accessStatus == GeolocationAccessStatus.Allowed)
             {
                 var geoLocator = new Geolocator { DesiredAccuracyInMeters = 50 };
-                Geoposition pos = await geoLocator.GetGeopositionAsync();
-
+                var pos = await geoLocator.GetGeopositionAsync();
                 MyMap.Center = pos.Coordinate.Point;
-                MyMap.ZoomLevel = 12;
-                MyMap.LandmarksVisible = true;
             }
             else
             {
-                // 위치 접근이 허용되지 않은 경우 기본 위치 설정
-                MyMap.Center = new Geopoint(new BasicGeoposition() { Latitude = 37.5665, Longitude = 126.9780 }); // 서울의 위도와 경도
-                MyMap.ZoomLevel = 12;
-                MyMap.LandmarksVisible = true;
+                MyMap.Center = new Geopoint(new BasicGeoposition()
+                {
+                    Latitude = 37.5665,
+                    Longitude = 126.9780
+                });
             }
 
-            MyMap.MapElementClick += MyMap_MapElementClick;
-
-            await LoadBusStops();
-            await Task.Run(() => LoadBusStopsByRoute());
+            MyMap.ZoomLevel = 12;
+            MyMap.LandmarksVisible = true;
         }
+        #endregion
 
-        private void InitializeUpdateTimer()
-        {
-            updateTimer = new DispatcherTimer();
-            updateTimer.Interval = TimeSpan.FromSeconds(1);
-            updateTimer.Tick += UpdateTimer_Tick;
-            updateTimer.Start();
-        }
-
-        private void UpdateTimer_Tick(object sender, object e)
-        {
-            UpdateMapIcons();
-        }
-
+        #region Map Operations
         private async Task LoadBusStops()
         {
             try
             {
-                var folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                var assetsFolder = await folder.GetFolderAsync("Assets");
-                var file = await assetsFolder.GetFileAsync("서울시버스정류소위치정보(20241209).xlsx");
+                var busStopLocations = await busService.LoadBusStopLocations();
+                var mapIcons = busService.CreateMapIcons(busStopLocations);
 
-                // 엑셀 파일 읽기
-                using (var stream = await file.OpenStreamForReadAsync())
-                {
-                    using (var workbook = new XLWorkbook(stream))
-                    {
-                        var worksheet = workbook.Worksheet(1); // 첫 번째 워크시트
-                        var rows = worksheet.RowsUsed().Skip(1); // 첫 줄은 헤더이므로 건너뜁니다.
-
-                        var mapIcons = new List<MapIcon>();
-
-                        foreach (var row in rows)
-                        {
-                            try
-                            {
-                                var busStopId = row.Cell(1).GetValue<string>().Trim();
-                                var arsId = row.Cell(2).GetValue<string>().Trim();
-                                var busStopName = row.Cell(3).GetValue<string>().Trim();
-                                if (double.TryParse(row.Cell(5).GetValue<string>().Trim(), out double latitude) && double.TryParse(row.Cell(4).GetValue<string>().Trim(), out double longitude))
-                                {
-                                    var location = new BasicGeoposition { Latitude = latitude, Longitude = longitude };
-                                    var point = new Geopoint(location);
-
-                                    await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                                    {
-                                        var mapIcon = new MapIcon
-                                        {
-                                            Location = point,
-                                            Title = busStopName,
-                                            ZIndex = 0,
-                                            Tag = arsId
-                                        };
-
-                                        mapIcons.Add(mapIcon);
-                                        //System.Diagnostics.Debug.WriteLine($"Parsed bus stop: {busStopName}");
-                                    });
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                // 각 줄의 파싱 중 발생한 예외 처리
-                                System.Diagnostics.Debug.WriteLine($"Error parsing row: {row.RowNumber()}. Exception: {ex.Message}");
-                            }
-                        }
-
-                        await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                        {
-                            allMapIcons.AddRange(mapIcons);
-                            UpdateMapIcons();
-                            System.Diagnostics.Debug.WriteLine($"Loaded {mapIcons.Count} bus stops.");
-                        });
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                // 파일 읽기 중 발생한 예외 처리
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error reading file. Exception: {ex.Message}");
+                    allMapIcons.AddRange(mapIcons);
+                    UpdateMapIcons();
+                    System.Diagnostics.Debug.WriteLine($"Loaded {mapIcons.Count} bus stops.");
                 });
             }
-        }
-
-        private async Task LoadBusStopsByRoute()
-        {
-            try
-            {
-                var folder = Windows.ApplicationModel.Package.Current.InstalledLocation;
-                var assetsFolder = await folder.GetFolderAsync("Assets");
-                var file = await assetsFolder.GetFileAsync("서울시버스노선별정류소정보(20241209).xlsx");
-
-                // 엑셀 파일 읽기
-                using (var stream = await file.OpenStreamForReadAsync())
-                {
-                    using (var workbook = new XLWorkbook(stream))
-                    {
-                        var worksheet = workbook.Worksheet(1); // 첫 번째 워크시트
-                        var rows = worksheet.RowsUsed().Skip(1); // 첫 줄은 헤더이므로 건너뜁니다.
-
-                        foreach (var row in rows)
-                        {
-                            try
-                            {
-                                var busStop = new BusStop
-                                {
-                                    RouteId = row.Cell(1).GetValue<string>().Trim(),
-                                    RouteName = row.Cell(2).GetValue<string>().Trim(),
-                                    Sequence = row.Cell(3).GetValue<int>(),
-                                    NodeId = row.Cell(4).GetValue<string>().Trim(),
-                                    ArsId = row.Cell(5).GetValue<string>().Trim(),
-                                    StopName = row.Cell(6).GetValue<string>().Trim(),
-                                    Longitude = row.Cell(7).GetValue<double>(),
-                                    Latitude = row.Cell(8).GetValue<double>()
-                                };
-
-                                if (!busStops.ContainsKey(busStop.ArsId))
-                                {
-                                    busStops[busStop.ArsId] = new List<BusStop>();
-                                }
-                                busStops[busStop.ArsId].Add(busStop);
-                            }
-                            catch (Exception ex)
-                            {
-                                // 각 줄의 파싱 중 발생한 예외 처리
-                                System.Diagnostics.Debug.WriteLine($"Error parsing row: {row.RowNumber()}. Exception: {ex.Message}");
-                            }
-                        }
-                    }
-                }
-            }
             catch (Exception ex)
             {
-                // 파일 읽기 중 발생한 예외 처리
                 await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
                 {
-                    System.Diagnostics.Debug.WriteLine($"Error reading file. Exception: {ex.Message}");
+                    System.Diagnostics.Debug.WriteLine($"Error loading bus stops: {ex.Message}");
                 });
             }
         }
@@ -216,14 +108,12 @@ namespace NineyWeather
         {
             if (MyMap.ZoomLevel < 15)
             {
-                // 줌 레벨이 15 미만일 때는 아이콘을 모두 제거
                 MyMap.MapElements.Clear();
                 currentMapIcons.Clear();
                 return;
             }
 
             var bounds = MyMap.GetBounds();
-
             var iconsToAdd = allMapIcons.Where(icon => bounds.Contains(icon.Location.Position)).ToList();
             var iconsToRemove = currentMapIcons.Except(iconsToAdd).ToList();
 
@@ -242,26 +132,230 @@ namespace NineyWeather
             }
         }
 
-        private void MyMap_MapElementClick(MapControl sender, MapElementClickEventArgs args)
+        private async void SettingLoadLastMapIcon()
         {
-            foreach (var mapElement in args.MapElements)
+            var lastClickedMapIcon = busService.LoadLastClickedMapIcon();
+            if (lastClickedMapIcon.HasValue)
             {
-                if (mapElement is MapIcon mapIcon)
-                {
-                    TitleTextBlock.Text = mapIcon.Title;
+                MyMap.Center = new Geopoint(lastClickedMapIcon.Value.Position);
+                MyMap.ZoomLevel = 18;
 
-                    if (busStops.TryGetValue(mapIcon.Tag as string, out var busStopList))
+                var mapIcon = allMapIcons.FirstOrDefault(icon => icon.Tag as string == lastClickedMapIcon.Value.Tag);
+                if (mapIcon != null)
+                {
+                    await HandleMapIconClick(mapIcon);
+                }
+            }
+        }
+
+        private async Task HandleMapIconClick(MapIcon mapIcon)
+        {
+            if (selectedMapIcon != null)
+            {
+                selectedMapIcon.Image = busService.CreateBusStopIcon(false);
+            }
+
+            selectedMapIcon = mapIcon;
+            mapIcon.Image = busService.CreateBusStopIcon(true);
+
+            busService.SaveLastClickedMapIcon(mapIcon.Location.Position, mapIcon.Tag as string);
+
+            TitleTextBlock.Text = mapIcon.Title;
+            await UpdateBusArrivalInfo(mapIcon.Tag as string);
+            ShowDetails();
+        }
+        #endregion
+
+        #region Timer Operations
+        private void InitializeUpdateTimer()
+        {
+            updateTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(1)
+            };
+            updateTimer.Tick += UpdateTimer_Tick;
+            updateTimer.Start();
+        }
+
+        private void StartBusArrivalInfoTimer()
+        {
+            if (busArrivalInfoTimer != null)
+            {
+                busArrivalInfoTimer.Stop();
+            }
+
+            string arsId = selectedMapIcon?.Tag as string;
+
+            busArrivalInfoTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(40)
+            };
+            busArrivalInfoTimer.Tick += async (sender, e) => await UpdateBusArrivalInfo(arsId);
+            busArrivalInfoTimer.Start();
+        }
+
+        private void UpdateTimer_Tick(object sender, object e)
+        {
+            UpdateMapIcons();
+            UpdateBusArrivalTimes();
+        }
+        #endregion
+
+        #region Bus Arrival Information
+        private async Task UpdateBusArrivalInfo(string arsId)
+        {
+            if (string.IsNullOrEmpty(arsId) || !busStops.TryGetValue(arsId, out var busStopList))
+                return;
+
+            var nodeId = busStopList[0].NodeId;
+            var busArrivalInfos = await GetBusArrivalInfos(nodeId);
+            if (busArrivalInfos == null) return;
+
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                var allBusArrivalInfos = busArrivalInfos
+                    .Where(x => busStopList.Any(b => b.RouteName == x.Key))
+                    .Select(x =>
                     {
-                        RouteNameListBox.Items.Clear();
-                        foreach (var busStop in busStopList)
-                        {
-                            RouteNameListBox.Items.Add(busStop.RouteName);
-                            System.Diagnostics.Debug.WriteLine($"Route: {busStop.RouteName}, Stop: {busStop.StopName}");
-                        }
+                        x.Value.RtNm = x.Key;
+                        x.Value.IsFavorite = favoriteBusRoutes.Contains(x.Key);
+                        return x.Value;
+                    })
+                    .ToList();
+
+                var groupedBusArrivalInfos = new List<object>();
+
+                var favorites = allBusArrivalInfos.Where(x => x.IsFavorite).ToList();
+                if (favorites.Any())
+                {
+                    groupedBusArrivalInfos.Add(new { Name = "즐겨찾기", Items = favorites });
+                }
+
+                var nonFavorites = allBusArrivalInfos.Where(x => !x.IsFavorite)
+                    .GroupBy(info => info.RouteType)
+                    .Select(g => new { Name = GetRouteTypeName(g.Key), Items = g.ToList() });
+
+                groupedBusArrivalInfos.AddRange(nonFavorites);
+
+                RouteNameListView.ItemsSource = groupedBusArrivalInfos;
+            });
+
+            StartBusArrivalInfoTimer();
+        }
+
+        private async Task<Dictionary<string, BusArrivalInfo>> GetBusArrivalInfos(string nodeId)
+        {
+            try
+            {
+                var busArrivalInfos = await busService.LoadBusArrivalInfoFromApi(nodeId);
+                var newMkTm = busArrivalInfos.Values.FirstOrDefault()?.MkTm;
+
+                if (!IsSameArrivalInfo(nodeId, newMkTm))
+                {
+                    busArrivalInfoCache[nodeId] = busArrivalInfos;
+                }
+                else if (!busArrivalInfoCache.ContainsKey(nodeId))
+                {
+                    busArrivalInfoCache[nodeId] = busArrivalInfos;
+                }
+                else
+                {
+                    busArrivalInfos = busArrivalInfoCache[nodeId];
+                }
+
+                return busArrivalInfos;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"버스 도착 정보 조회 실패: {ex.Message}");
+                return null;
+            }
+        }
+
+        private void UpdateBusArrivalTimes()
+        {
+            foreach (var nodeId in busArrivalInfoCache.Keys)
+            {
+                var arrivalInfos = busArrivalInfoCache[nodeId];
+                foreach (var routeName in arrivalInfos.Keys)
+                {
+                    var busInfo = arrivalInfos[routeName];
+
+                    if (busInfo.RemainingTime1.HasValue)
+                    {
+                        var newTime1 = busInfo.RemainingTime1.Value.Subtract(TimeSpan.FromSeconds(1));
+                        busInfo.Arrmsg1 = busService.ReplaceTimeInMessage(busInfo.Arrmsg1, newTime1);
                     }
 
-                    ShowDetails();
+                    if (busInfo.RemainingTime2.HasValue)
+                    {
+                        var newTime2 = busInfo.RemainingTime2.Value.Subtract(TimeSpan.FromSeconds(1));
+                        busInfo.Arrmsg2 = busService.ReplaceTimeInMessage(busInfo.Arrmsg2, newTime2);
+                    }
                 }
+            }
+        }
+
+        private bool IsSameArrivalInfo(string nodeId, string newMkTm)
+        {
+            var currentTag = RouteNameListView.Tag as Dictionary<string, string> ?? new Dictionary<string, string>();
+            bool isSame = currentTag.TryGetValue(nodeId, out var currentMkTm) && currentMkTm == newMkTm;
+
+            currentTag[nodeId] = newMkTm;
+            RouteNameListView.Tag = currentTag;
+
+            return isSame;
+        }
+
+        private string GetRouteTypeName(int routeType)
+        {
+            return busService.GetRouteTypeName(routeType);
+        }
+        #endregion
+
+        #region Favorites
+        private void LoadFavorites()
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            var favoritesString = localSettings.Values[FAVORITES_SETTINGS_KEY] as string ?? "";
+            favoriteBusRoutes = new HashSet<string>(favoritesString.Split(',').Where(s => !string.IsNullOrEmpty(s)));
+        }
+
+        private void SaveFavorites()
+        {
+            var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+            localSettings.Values[FAVORITES_SETTINGS_KEY] = string.Join(",", favoriteBusRoutes);
+        }
+        #endregion
+
+        #region UI Event Handlers
+        private async void MyMap_MapElementClick(MapControl sender, MapElementClickEventArgs args)
+        {
+            if (!(args.MapElements.FirstOrDefault() is MapIcon mapIcon)) return;
+            await HandleMapIconClick(mapIcon);
+        }
+
+        private void FavoriteButton_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Button;
+            var busInfo = button.DataContext as BusArrivalInfo;
+
+            if (busInfo.IsFavorite)
+            {
+                favoriteBusRoutes.Remove(busInfo.RtNm);
+            }
+            else
+            {
+                favoriteBusRoutes.Add(busInfo.RtNm);
+            }
+
+            busInfo.IsFavorite = !busInfo.IsFavorite;
+            SaveFavorites();
+
+            var arsId = selectedMapIcon?.Tag as string;
+            if (!string.IsNullOrEmpty(arsId))
+            {
+                _ = UpdateBusArrivalInfo(arsId);
             }
         }
 
@@ -274,8 +368,10 @@ namespace NineyWeather
         {
             DetailsOverlay.Visibility = Visibility.Collapsed;
         }
+        #endregion
     }
 
+    #region Extensions
     public static class MapControlExtensions
     {
         public static GeoboundingBox GetBounds(this MapControl mapControl)
@@ -294,4 +390,5 @@ namespace NineyWeather
                    position.Longitude <= box.SoutheastCorner.Longitude;
         }
     }
+    #endregion
 }

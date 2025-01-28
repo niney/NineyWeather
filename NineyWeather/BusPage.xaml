@@ -11,15 +11,149 @@
 
     <Grid>
         <maps:MapControl x:Name="MyMap"
-                         HorizontalAlignment="Stretch"
-                         VerticalAlignment="Stretch"/>
-        
-        <Border x:Name="DetailsOverlay" Background="LightGray" BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" Width="300" Visibility="Collapsed">
-            <StackPanel x:Name="DetailsPanel" Padding="10">
-                <Button Content="✖" HorizontalAlignment="Right" Click="HideDetailsButton_Click" />
-                <TextBlock x:Name="TitleTextBlock" FontSize="24" FontWeight="Bold" Foreground="DarkBlue" />
-                <ListBox x:Name="RouteNameListBox" />
-            </StackPanel>
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Stretch"/>
+
+        <Border x:Name="DetailsOverlay" 
+                Background="#F8F9FA"
+                BorderBrush="#E9ECEF"
+                BorderThickness="1" 
+                HorizontalAlignment="Right" 
+                VerticalAlignment="Stretch" 
+                Width="320" 
+                Visibility="Collapsed">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- 상단 헤더 -->
+                <Grid Grid.Row="0" 
+                      Background="White"
+                      Padding="16,12"
+                      BorderThickness="0,0,0,1"
+                      BorderBrush="#E9ECEF">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock x:Name="TitleTextBlock" 
+                             Grid.Column="0"
+                             FontSize="16"
+                             FontWeight="SemiBold"
+                             Foreground="#212529"/>
+
+                    <Button Grid.Column="1"
+                            Content="&#xE8BB;"
+                            FontFamily="Segoe MDL2 Assets"
+                            Foreground="#868E96"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Click="HideDetailsButton_Click"/>
+                </Grid>
+
+                <!-- 버스 도착 정보 리스트 -->
+                <ListView x:Name="RouteNameListView" 
+                         Grid.Row="1"
+                         IsItemClickEnabled="False"
+                         Padding="0,8"
+                         SelectionMode="None"
+                         Background="Transparent">
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="16"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel>
+                                <!-- 그룹 헤더 -->
+                                <Grid Background="White"
+                                      Padding="16,10" 
+                                      BorderThickness="0,0,0,1"
+                                      BorderBrush="#E9ECEF">
+                                    <TextBlock Text="{Binding Name}"
+                                             FontSize="15"
+                                             FontWeight="SemiBold"
+                                             Foreground="#495057"/>
+                                </Grid>
+
+                                <!-- 버스 도착 정보 아이템들 -->
+                                <ItemsControl ItemsSource="{Binding Items}"
+                                            Margin="0,1,0,0">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Padding="16,14" 
+                                                  Background="White"
+                                                  BorderThickness="0,0,0,1"
+                                                  BorderBrush="#E9ECEF">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+
+                                                <StackPanel Grid.Column="0">
+                                                    <TextBlock Text="{Binding RtNm}" 
+                                                             FontSize="15"
+                                                             FontWeight="SemiBold"
+                                                             Foreground="#212529"/>
+
+                                                    <StackPanel Margin="0,10,0,0"
+                                                              Spacing="16">
+                                                        <StackPanel>
+                                                            <TextBlock Text="첫번째 버스" 
+                                                                     Foreground="#868E96"
+                                                                     FontSize="12"/>
+                                                            <TextBlock Text="{Binding Arrmsg1}" 
+                                                                     Margin="0,4,0,0"
+                                                                     FontWeight="SemiBold"
+                                                                     Foreground="#495057"/>
+                                                        </StackPanel>
+
+                                                        <StackPanel>
+                                                            <TextBlock Text="두번째 버스"
+                                                                     Foreground="#868E96"
+                                                                     FontSize="12"/>
+                                                            <TextBlock Text="{Binding Arrmsg2}"
+                                                                     Margin="0,4,0,0"
+                                                                     FontWeight="SemiBold"
+                                                                     Foreground="#495057"/>
+                                                        </StackPanel>
+                                                    </StackPanel>
+                                                </StackPanel>
+
+                                                <Button Grid.Column="1"
+                                                        x:Name="FavoriteButton"
+                                                        Click="FavoriteButton_Click"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Padding="8,4"
+                                                        VerticalAlignment="Top">
+                                                    <FontIcon Glyph="{Binding IsFavorite, Converter={StaticResource BooleanToFavoriteIconConverter}}"
+                                                            FontFamily="Segoe MDL2 Assets"
+                                                            Foreground="{Binding IsFavorite, Converter={StaticResource BooleanToFavoriteColorConverter}}"/>
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                            <Setter Property="Padding" Value="0"/>
+                            <Setter Property="MinHeight" Value="0"/>
+                            <Setter Property="Margin" Value="0"/>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </Grid>
         </Border>
     </Grid>
 </Page>

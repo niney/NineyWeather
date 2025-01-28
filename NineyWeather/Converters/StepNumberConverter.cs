@@ -29,4 +29,30 @@ namespace NineyWeather.Converters
             throw new NotImplementedException();
         }
     }
+
+    public class BooleanToFavoriteIconConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (bool)value ? "\uE735" : "\uE734"; // Filled star : Empty star
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public class BooleanToFavoriteColorConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            return (bool)value ? "#FFD700" : "#868E96"; // Gold : Gray
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

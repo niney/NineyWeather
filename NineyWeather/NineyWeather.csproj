@@ -136,6 +136,9 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Model\AirMesure.cs" />
+    <Compile Include="Model\BusArrivalInfo.cs" />
+    <Compile Include="Model\BusStop.cs" />
+    <Compile Include="Model\BusStopLocation.cs" />
     <Compile Include="Model\CCResult.cs" />
     <Compile Include="Model\Stream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -147,6 +150,7 @@
     <Compile Include="Model\KkoDocuments.cs" />
     <Compile Include="Model\KkoResult.cs" />
     <Compile Include="Service\AirColor.cs" />
+    <Compile Include="Service\BusService.cs" />
     <Compile Include="Service\FoodRecommendService.cs" />
     <Compile Include="Service\LibraryService.cs" />
     <Compile Include="WratherPage.xaml.cs">
@@ -164,6 +168,7 @@
     <Content Include="Assets\BadgeLogo.scale-150.png" />
     <Content Include="Assets\BadgeLogo.scale-200.png" />
     <Content Include="Assets\BadgeLogo.scale-400.png" />
+    <Content Include="Assets\getLowArrInfoByStId.xml" />
     <Content Include="Assets\LargeTile.scale-100.png" />
     <Content Include="Assets\LargeTile.scale-125.png" />
     <Content Include="Assets\LargeTile.scale-150.png" />

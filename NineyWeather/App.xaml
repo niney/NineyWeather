@@ -11,6 +11,8 @@
             <!-- Converters -->
             <converters:StepNumberConverter x:Key="StepNumberConverter"/>
             <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+            <converters:BooleanToFavoriteIconConverter x:Key="BooleanToFavoriteIconConverter"/>
+            <converters:BooleanToFavoriteColorConverter x:Key="BooleanToFavoriteColorConverter"/>
             <ResourceDictionary.MergedDictionaries>
 
                 <!-- 

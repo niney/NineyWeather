@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -9,6 +11,7 @@ namespace NineyWeather
     public sealed partial class MainPage : Page
     {
         private const string SelectedNavItemKey = "SelectedNavItem";
+        private DispatcherTimer timer;
 
         public MainPage()
         {
@@ -34,6 +37,52 @@ namespace NineyWeather
                 // 초기 페이지로 날씨 페이지 설정
                 ContentFrame.Navigate(typeof(WeatherPage));
             }
+
+            // 타이머 설정
+            SetTimer();
+        }
+
+        private void SetTimer()
+        {
+            if (timer != null)
+            {
+                timer.Stop();
+            }
+
+            timer = new DispatcherTimer();
+            timer.Interval = TimeSpan.FromMinutes(10);
+            timer.Tick += Timer_Tick;
+            timer.Start();
+        }
+
+        private void Timer_Tick(object sender, object e)
+        {
+            var currentTime = DateTime.Now.TimeOfDay;
+            var currentDay = DateTime.Now.DayOfWeek;
+
+            if ((currentDay == DayOfWeek.Tuesday && currentTime >= new TimeSpan(19, 10, 0) && currentTime <= new TimeSpan(19, 40, 0)) ||
+                (currentDay == DayOfWeek.Saturday && currentTime >= new TimeSpan(11, 0, 0) && currentTime <= new TimeSpan(11, 30, 0)) ||
+                (currentDay == DayOfWeek.Sunday && currentTime >= new TimeSpan(14, 0, 0) && currentTime <= new TimeSpan(14, 30, 0)))
+            {
+                if (!(ContentFrame.Content is BusPage))
+                {
+                    ContentFrame.Navigate(typeof(BusPage));
+                }
+            }
+            else if (currentTime >= new TimeSpan(11, 0, 0) && currentTime <= new TimeSpan(13, 0, 0))
+            {
+                if (!(ContentFrame.Content is FoodPage))
+                {
+                    ContentFrame.Navigate(typeof(FoodPage));
+                }
+            }
+            else
+            {
+                if (!(ContentFrame.Content is WeatherPage))
+                {
+                    ContentFrame.Navigate(typeof(WeatherPage));
+                }
+            }
         }
 
         private void NavView_ItemInvoked(NavigationView sender, NavigationViewItemInvokedEventArgs args)
@@ -49,6 +98,9 @@ namespace NineyWeather
                 localSettings.Values[SelectedNavItemKey] = invokedItemTag;
 
                 NavigateToPage(invokedItemTag);
+
+                // 타이머 재설정
+                SetTimer();
             }
         }
 
