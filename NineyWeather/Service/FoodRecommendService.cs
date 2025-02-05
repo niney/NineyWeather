@@ -162,6 +162,9 @@ namespace NineyWeather.Service
                     var summaryNode = contentsAreaFull.SelectSingleNode(".//div[@class='view2_summary_in']");
                     recipeData.Summary = summaryNode?.InnerText.Trim();
                 }
+                // 5. 팁/주의사항 정보 가져오기
+                HtmlNode tipNode = doc.DocumentNode.SelectSingleNode("//dl[@class='view_step_tip']/dd");
+                recipeData.Tip = tipNode?.InnerText.Trim();
             }
             catch (Exception ex)
             {
@@ -219,6 +222,7 @@ namespace NineyWeather.Service
         public List<RecipeStep> Steps { get; set; }
         public string RecipeName { get; set; }
         public string Summary { get; set; }
+        public string Tip { get; set; }
     }
 
 }

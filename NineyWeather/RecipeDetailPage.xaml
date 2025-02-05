@@ -27,6 +27,8 @@
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -124,6 +126,19 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
+
+                <!-- 팁/주의사항 헤더 -->
+                <TextBlock Grid.Row="5"
+                  Text="팁/주의사항"
+                  Style="{ThemeResource SubheaderTextBlockStyle}"
+                  Margin="0,0,0,8"/>
+
+                <!-- 팁/주의사항 내용 -->
+                <TextBlock Grid.Row="6"
+                  Text="{x:Bind Recipe.Tip}"
+                  Style="{ThemeResource BodyTextBlockStyle}"
+                  TextWrapping="Wrap"
+                  Margin="0,0,0,24"/>
             </Grid>
         </ScrollViewer>
     </Grid>
