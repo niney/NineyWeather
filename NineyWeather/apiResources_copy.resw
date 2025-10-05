@@ -123,6 +123,11 @@
   </data>
   <data name="bingMapServiceKey" xml:space="preserve">
     <value />
+    <comment>빙맵 서비스 값</comment>
+  </data>
+  <data name="busServiceKey" xml:space="preserve">
+    <value />
+    <comment>버스 서비스키</comment>
   </data>
   <data name="kakaoAuthKey" xml:space="preserve">
     <value />
