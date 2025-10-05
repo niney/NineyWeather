@@ -1,0 +1,51 @@
+﻿<Page
+    x:Class="NineyWeather.RoulettePage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:canvas="using:Microsoft.Graphics.Canvas.UI.Xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+    <Grid Padding="20">
+        <StackPanel HorizontalAlignment="Center">
+            <!-- 제목 -->
+            <TextBlock Text="오늘의 점심 메뉴는?" 
+                       FontSize="24" 
+                       Margin="0,0,0,20"
+                       HorizontalAlignment="Center"/>
+
+            <!-- 음식 종류 선택 ComboBox -->
+            <ComboBox x:Name="cuisineComboBox"
+                      Width="200"
+                      Margin="0,0,0,20"
+                      SelectionChanged="CuisineComboBox_SelectionChanged">
+                <ComboBoxItem Content="한식" IsSelected="True"/>
+                <ComboBoxItem Content="중식"/>
+                <ComboBoxItem Content="양식"/>
+            </ComboBox>
+
+            <!-- Win2D CanvasControl (크기는 500x500) -->
+            <Grid>
+                <canvas:CanvasControl x:Name="wheelCanvas" 
+                                      Width="500" 
+                                      Height="500" />
+            </Grid>
+            <!-- 스핀 버튼 -->
+            <Button x:Name="spinButton" 
+                    Content="돌리기" 
+                    FontSize="18" 
+                    Padding="10,5" 
+                    Margin="0,20,0,0"
+                    Click="SpinButton_Click"/>
+            <!-- 결과 표시 -->
+            <TextBlock x:Name="resultTextBlock" 
+                       FontSize="22" 
+                       FontWeight="Bold" 
+                       Opacity="0" 
+                       Margin="0,20,0,0" 
+                       TextAlignment="Center"/>
+        </StackPanel>
+    </Grid>
+</Page>

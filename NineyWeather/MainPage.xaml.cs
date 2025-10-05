@@ -64,10 +64,10 @@ namespace NineyWeather
                 (currentDay == DayOfWeek.Saturday && currentTime >= new TimeSpan(11, 0, 0) && currentTime <= new TimeSpan(11, 30, 0)) ||
                 (currentDay == DayOfWeek.Sunday && currentTime >= new TimeSpan(14, 0, 0) && currentTime <= new TimeSpan(14, 30, 0)))
             {
-                if (!(ContentFrame.Content is BusPage))
-                {
-                    ContentFrame.Navigate(typeof(BusPage));
-                }
+                //if (!(ContentFrame.Content is BusPage))
+                //{
+                    //ContentFrame.Navigate(typeof(BusPage));
+                //}
             }
             else if (currentTime >= new TimeSpan(11, 0, 0) && currentTime <= new TimeSpan(13, 0, 0))
             {
@@ -119,6 +119,9 @@ namespace NineyWeather
                     break;
                 case "photos":
                     ContentFrame.Navigate(typeof(ImageSlidePage));
+                    break;
+                case "lunchRoulette":
+                    ContentFrame.Navigate(typeof(RoulettePage));
                     break;
             }
         }

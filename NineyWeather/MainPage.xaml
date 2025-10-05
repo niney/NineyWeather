@@ -40,6 +40,13 @@
                     <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8B9;"/>
                 </NavigationViewItem.Icon>
             </NavigationViewItem>
+
+            <NavigationViewItem Tag="lunchRoulette" 
+                               Content="점심 롤렛">
+                <NavigationViewItem.Icon>
+                    <FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8D1;"/>
+                </NavigationViewItem.Icon>
+            </NavigationViewItem>
         </NavigationView.MenuItems>
 
         <Frame x:Name="ContentFrame"/>
