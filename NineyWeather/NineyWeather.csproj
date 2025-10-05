@@ -11,7 +11,7 @@
     <AssemblyName>NineyWeather</AssemblyName>
     <DefaultLanguage>ko-KR</DefaultLanguage>
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
-    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.18362.0</TargetPlatformVersion>
+    <TargetPlatformVersion Condition=" '$(TargetPlatformVersion)' == '' ">10.0.22621.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
     <FileAlignment>512</FileAlignment>
@@ -145,6 +145,9 @@
     <Compile Include="RecipeDetailPage.xaml.cs">
       <DependentUpon>RecipeDetailPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="RoulettePage.xaml.cs">
+      <DependentUpon>RoulettePage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ScenarioConfiguration.cs" />
     <Compile Include="Service\AirSerivce.cs" />
     <Compile Include="Model\KkoDocuments.cs" />
@@ -251,6 +254,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="RoulettePage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Styles\Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -275,6 +282,9 @@
     </PackageReference>
     <PackageReference Include="NLog">
       <Version>4.7.2</Version>
+    </PackageReference>
+    <PackageReference Include="Win2D.uwp">
+      <Version>1.28.2</Version>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
